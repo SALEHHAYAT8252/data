@@ -12,7 +12,8 @@ import {
   IconCheck,
   IconZoomIn,
   IconZoomOut,
-  IconRotateCcw
+  IconRotateCcw,
+  IconMenu
 } from './components/Icons';
 
 export default function App() {
@@ -38,8 +39,29 @@ export default function App() {
   const [experiments, setExperiments] = useState(labData.experiments || []);
   const [viewMode, setViewMode] = useState('all'); // 'all', 'front', 'cover', 'certificate', 'index'
   const [selectedExpId, setSelectedExpId] = useState(null);
-  const [zoom, setZoom] = useState(0.85);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState('idle'); // 'idle' | 'preparing' | 'downloading' | 'ready'
+
+  // Dynamic responsive auto-fit zoom based on viewport width
+  const computeFitZoom = () => {
+    if (typeof window === 'undefined') return 0.85;
+    const availableWidth = window.innerWidth <= 900 ? window.innerWidth - 20 : window.innerWidth - 440;
+    const fit = Math.min(0.85, Math.max(0.35, availableWidth / 820));
+    return Number(fit.toFixed(2));
+  };
+
+  const [zoom, setZoom] = useState(0.85);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 900) {
+        setZoom(computeFitZoom());
+      }
+    };
+    setZoom(computeFitZoom());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Dynamic Index page count (Page 1 has maximum 7 questions, remaining on next page)
   const indexPagesCount = getIndexPages(experiments).length;
@@ -125,6 +147,14 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="app-container">
+        {/* Mobile Backdrop */}
+        {isSidebarOpen && (
+          <div
+            className="sidebar-backdrop no-print"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {/* Left Sidebar Controls */}
         <Sidebar
           student={student}
@@ -140,6 +170,8 @@ export default function App() {
           onDownloadPdf={handleDownloadPdf}
           downloadStatus={downloadStatus}
           onReset={handleReset}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
 
         {/* Main Preview Area */}
@@ -147,12 +179,22 @@ export default function App() {
           {/* Sticky Toolbar */}
           <div className="preview-toolbar no-print">
             <div className="toolbar-group">
-              <span style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9' }}>
-                Live Document Preview
+              {/* Mobile Sidebar Hamburger Toggle */}
+              <button
+                className="mobile-toggle-btn no-print"
+                onClick={() => setIsSidebarOpen(true)}
+                title="Open Student Form & Settings"
+              >
+                <IconMenu size={16} />
+                <span>Form</span>
+              </button>
+
+              <span className="toolbar-title-text" style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9' }}>
+                Document Preview
               </span>
-              <span style={{ fontSize: '12px', color: '#64748b' }}>•</span>
-              <span style={{ fontSize: '12px', color: '#94a3b8' }}>
-                {pageCount} A4 Pages (All with Rectangular Border)
+              <span className="toolbar-divider" style={{ fontSize: '12px', color: '#64748b' }}>•</span>
+              <span className="toolbar-badge-text" style={{ fontSize: '12px', color: '#94a3b8' }}>
+                {pageCount} A4 Pages
               </span>
             </div>
 
@@ -160,13 +202,13 @@ export default function App() {
               {/* Zoom Controls */}
               <div style={{ display: 'flex', alignItems: 'center', background: '#1e2636', borderRadius: '6px', padding: '2px 4px', border: '1px solid #2b3548' }}>
                 <button
-                  onClick={() => setZoom(prev => Math.max(0.4, Number((prev - 0.1).toFixed(2))))}
+                  onClick={() => setZoom(prev => Math.max(0.35, Number((prev - 0.1).toFixed(2))))}
                   style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px 6px', display: 'flex' }}
                   title="Zoom Out"
                 >
                   <IconZoomOut size={15} />
                 </button>
-                <span style={{ fontSize: '12px', fontWeight: '600', minWidth: '46px', textAlign: 'center', color: '#e2e8f0' }}>
+                <span style={{ fontSize: '12px', fontWeight: '600', minWidth: '42px', textAlign: 'center', color: '#e2e8f0' }}>
                   {Math.round(zoom * 100)}%
                 </span>
                 <button
@@ -177,9 +219,9 @@ export default function App() {
                   <IconZoomIn size={15} />
                 </button>
                 <button
-                  onClick={() => setZoom(0.85)}
+                  onClick={() => setZoom(computeFitZoom())}
                   style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', padding: '4px 8px', fontSize: '11px', fontWeight: '500' }}
-                  title="Reset Zoom to Fit"
+                  title="Auto-Fit Page to Screen"
                 >
                   Fit
                 </button>
@@ -189,17 +231,17 @@ export default function App() {
               <button
                 onClick={handleDownloadPdf}
                 disabled={downloadStatus !== 'idle'}
-                className="btn-primary"
+                className="btn-primary btn-download-responsive"
                 style={{
                   width: 'auto',
-                  padding: '8px 16px',
+                  padding: '8px 14px',
                   fontSize: '12.5px',
                   background: downloadStatus !== 'idle'
                     ? '#3b82f6'
                     : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   cursor: downloadStatus !== 'idle' ? 'wait' : 'pointer',
                   opacity: downloadStatus !== 'idle' ? 0.95 : 1
                 }}
@@ -210,9 +252,9 @@ export default function App() {
                 {downloadStatus === 'ready' && <IconCheck size={15} />}
                 <span>
                   {downloadStatus === 'idle' && `Download ${getCleanFilename()}.pdf`}
-                  {downloadStatus === 'preparing' && `Preparing ${getCleanFilename()}.pdf...`}
-                  {downloadStatus === 'downloading' && `Downloading ${getCleanFilename()}.pdf...`}
-                  {downloadStatus === 'ready' && `✓ ${getCleanFilename()}.pdf Ready!`}
+                  {downloadStatus === 'preparing' && `Preparing...`}
+                  {downloadStatus === 'downloading' && `Downloading...`}
+                  {downloadStatus === 'ready' && `Ready!`}
                 </span>
               </button>
             </div>

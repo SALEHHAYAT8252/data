@@ -14,7 +14,8 @@ import {
   IconLayers,
   IconEdit,
   IconCalendar,
-  IconSparkles
+  IconSparkles,
+  IconClose
 } from './Icons';
 
 export default function Sidebar({
@@ -30,7 +31,9 @@ export default function Sidebar({
   setSelectedExpId,
   onDownloadPdf,
   downloadStatus = 'idle',
-  onReset
+  onReset,
+  isOpen = false,
+  onClose = () => {}
 }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTableEditor, setShowTableEditor] = useState(false);
@@ -52,12 +55,22 @@ export default function Sidebar({
   const enrollFile = `${(student?.enrollmentNo || 'A250017').trim() || 'A250017'}.pdf`;
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar no-print ${isOpen ? 'mobile-open' : ''}`}>
       {/* Header */}
       <div className="sidebar-header">
-        <div className="brand-badge">
-          <IconSparkles size={13} />
-          <span>MANUU MCA Data Science</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div className="brand-badge">
+            <IconSparkles size={13} />
+            <span>MANUU MCA Data Science</span>
+          </div>
+          <button
+            className="sidebar-close-btn no-print"
+            onClick={onClose}
+            title="Close sidebar"
+            aria-label="Close"
+          >
+            <IconClose size={18} />
+          </button>
         </div>
         <h1 className="sidebar-title">Lab Record Generator</h1>
         <p className="sidebar-subtitle">Create verified academic lab records & PDF documents</p>

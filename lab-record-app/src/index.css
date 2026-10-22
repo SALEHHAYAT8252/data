@@ -1168,3 +1168,125 @@ body {
   from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* ========================================================
+   RESPONSIVE LAYOUT (Mobile, Tablet, Desktop)
+   ======================================================== */
+.sidebar-close-btn {
+  display: none;
+}
+
+.mobile-toggle-btn {
+  display: none;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 45;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+/* Tablet & Mobile Screens (<= 900px) */
+@media screen and (max-width: 900px) {
+  .app-container {
+    position: relative;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(88vw, 380px);
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.85);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sidebar-close-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+  }
+
+  .mobile-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mobile-toggle-btn:hover {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+  }
+
+  .preview-toolbar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .preview-canvas-wrapper {
+    padding: 16px 8px;
+    gap: 20px;
+  }
+}
+
+/* Small Mobile Screens (<= 640px) */
+@media screen and (max-width: 640px) {
+  .preview-toolbar {
+    padding: 8px 10px;
+  }
+
+  .toolbar-badge-text,
+  .toolbar-divider {
+    display: none;
+  }
+
+  .toolbar-title-text {
+    font-size: 12px;
+  }
+
+  .preview-toolbar .toolbar-group {
+    gap: 8px;
+  }
+
+  .btn-download-responsive {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+  }
+
+  .preview-canvas-wrapper {
+    padding: 12px 4px;
+    gap: 16px;
+  }
+}

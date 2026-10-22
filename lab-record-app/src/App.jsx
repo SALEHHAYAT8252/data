@@ -42,11 +42,21 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState('idle'); // 'idle' | 'preparing' | 'downloading' | 'ready'
 
-  // Dynamic responsive auto-fit zoom based on viewport width
+  // Dynamic responsive auto-fit zoom based on preview canvas clientWidth
   const computeFitZoom = () => {
     if (typeof window === 'undefined') return 0.85;
-    const availableWidth = window.innerWidth <= 900 ? window.innerWidth - 20 : window.innerWidth - 440;
-    const fit = Math.min(0.85, Math.max(0.35, availableWidth / 820));
+    const previewContainer = document.getElementById('document-preview-container');
+    const containerWidth = previewContainer?.clientWidth || (
+      window.innerWidth <= 768 
+        ? window.innerWidth 
+        : window.innerWidth <= 900 
+          ? window.innerWidth 
+          : window.innerWidth - 420
+    );
+    // Usable width minus 24px padding for clean margins around A4 sheet
+    const usableWidth = Math.max(240, containerWidth - 24);
+    // 794px is exact ISO A4 width (210mm at 96 DPI)
+    const fit = Math.min(0.85, Math.max(0.25, usableWidth / 794));
     return Number(fit.toFixed(2));
   };
 
@@ -54,13 +64,17 @@ export default function App() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 900) {
-        setZoom(computeFitZoom());
-      }
+      setZoom(computeFitZoom());
     };
-    setZoom(computeFitZoom());
+    // Short delay to ensure container is mounted in DOM
+    const timer = setTimeout(() => {
+      setZoom(computeFitZoom());
+    }, 60);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Dynamic Index page count (Page 1 has maximum 7 questions, remaining on next page)
@@ -177,86 +191,112 @@ export default function App() {
         {/* Main Preview Area */}
         <main className="preview-pane">
           {/* Sticky Toolbar */}
+          {/* Sticky Responsive Toolbar */}
           <div className="preview-toolbar no-print">
-            <div className="toolbar-group">
-              {/* Mobile Sidebar Hamburger Toggle */}
-              <button
-                className="mobile-toggle-btn no-print"
-                onClick={() => setIsSidebarOpen(true)}
-                title="Open Student Form & Settings"
-              >
-                <IconMenu size={16} />
-                <span>Form</span>
-              </button>
+            {/* Main/Top Row */}
+            <div className="toolbar-main-row">
+              <div className="toolbar-left-group">
+                {/* Mobile Sidebar Hamburger Toggle */}
+                <button
+                  className="mobile-toggle-btn no-print"
+                  onClick={() => setIsSidebarOpen(true)}
+                  title="Open Student Form & Settings"
+                >
+                  <IconMenu size={16} />
+                  <span>Form</span>
+                </button>
 
-              <span className="toolbar-title-text" style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9' }}>
-                Document Preview
-              </span>
-              <span className="toolbar-divider" style={{ fontSize: '12px', color: '#64748b' }}>•</span>
-              <span className="toolbar-badge-text" style={{ fontSize: '12px', color: '#94a3b8' }}>
-                {pageCount} A4 Pages
-              </span>
+                <div className="toolbar-title-wrap">
+                  <span className="toolbar-title-text">
+                    Document Preview
+                  </span>
+                  <span className="toolbar-divider">•</span>
+                  <span className="toolbar-badge-text">
+                    {pageCount} Pages
+                  </span>
+                </div>
+              </div>
+
+              <div className="toolbar-right-group">
+                {/* Desktop Zoom Controls (hidden on mobile row 1) */}
+                <div className="zoom-controls desktop-zoom">
+                  <button
+                    onClick={() => setZoom(prev => Math.max(0.35, Number((prev - 0.1).toFixed(2))))}
+                    className="zoom-btn"
+                    title="Zoom Out"
+                  >
+                    <IconZoomOut size={15} />
+                  </button>
+                  <span className="zoom-value">
+                    {Math.round(zoom * 100)}%
+                  </span>
+                  <button
+                    onClick={() => setZoom(prev => Math.min(1.4, Number((prev + 0.1).toFixed(2))))}
+                    className="zoom-btn"
+                    title="Zoom In"
+                  >
+                    <IconZoomIn size={15} />
+                  </button>
+                  <button
+                    onClick={() => setZoom(computeFitZoom())}
+                    className="zoom-fit-btn"
+                    title="Auto-Fit Page to Screen"
+                  >
+                    Fit
+                  </button>
+                </div>
+
+                {/* Fast Vector PDF Download Button with Active Download Status */}
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={downloadStatus !== 'idle'}
+                  className="btn-primary btn-download-responsive"
+                  title={`Download ${getCleanFilename()}.pdf`}
+                >
+                  {downloadStatus === 'idle' && <IconDownload size={15} />}
+                  {(downloadStatus === 'preparing' || downloadStatus === 'downloading') && <IconLoader size={15} />}
+                  {downloadStatus === 'ready' && <IconCheck size={15} />}
+                  <span className="download-btn-text">
+                    {downloadStatus === 'idle' && 'Download PDF'}
+                    {downloadStatus === 'preparing' && 'Preparing...'}
+                    {downloadStatus === 'downloading' && 'Downloading...'}
+                    {downloadStatus === 'ready' && 'Ready!'}
+                  </span>
+                </button>
+              </div>
             </div>
 
-            <div className="toolbar-group">
-              {/* Zoom Controls */}
-              <div style={{ display: 'flex', alignItems: 'center', background: '#1e2636', borderRadius: '6px', padding: '2px 4px', border: '1px solid #2b3548' }}>
+            {/* Mobile Sub-Row: Centered Zoom & Page Badge (only visible on mobile <= 768px) */}
+            <div className="toolbar-mobile-subrow">
+              <div className="zoom-controls mobile-zoom">
                 <button
                   onClick={() => setZoom(prev => Math.max(0.35, Number((prev - 0.1).toFixed(2))))}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px 6px', display: 'flex' }}
+                  className="zoom-btn"
                   title="Zoom Out"
                 >
-                  <IconZoomOut size={15} />
+                  <IconZoomOut size={14} />
                 </button>
-                <span style={{ fontSize: '12px', fontWeight: '600', minWidth: '42px', textAlign: 'center', color: '#e2e8f0' }}>
+                <span className="zoom-value">
                   {Math.round(zoom * 100)}%
                 </span>
                 <button
                   onClick={() => setZoom(prev => Math.min(1.4, Number((prev + 0.1).toFixed(2))))}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px 6px', display: 'flex' }}
+                  className="zoom-btn"
                   title="Zoom In"
                 >
-                  <IconZoomIn size={15} />
+                  <IconZoomIn size={14} />
                 </button>
                 <button
                   onClick={() => setZoom(computeFitZoom())}
-                  style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', padding: '4px 8px', fontSize: '11px', fontWeight: '500' }}
+                  className="zoom-fit-btn"
                   title="Auto-Fit Page to Screen"
                 >
-                  Fit
+                  Auto-Fit
                 </button>
               </div>
-
-              {/* Fast Vector PDF Download Button with Active Download Status */}
-              <button
-                onClick={handleDownloadPdf}
-                disabled={downloadStatus !== 'idle'}
-                className="btn-primary btn-download-responsive"
-                style={{
-                  width: 'auto',
-                  padding: '8px 14px',
-                  fontSize: '12.5px',
-                  background: downloadStatus !== 'idle'
-                    ? '#3b82f6'
-                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: downloadStatus !== 'idle' ? 'wait' : 'pointer',
-                  opacity: downloadStatus !== 'idle' ? 0.95 : 1
-                }}
-                title={`Download ${getCleanFilename()}.pdf`}
-              >
-                {downloadStatus === 'idle' && <IconDownload size={15} />}
-                {(downloadStatus === 'preparing' || downloadStatus === 'downloading') && <IconLoader size={15} />}
-                {downloadStatus === 'ready' && <IconCheck size={15} />}
-                <span>
-                  {downloadStatus === 'idle' && `Download ${getCleanFilename()}.pdf`}
-                  {downloadStatus === 'preparing' && `Preparing...`}
-                  {downloadStatus === 'downloading' && `Downloading...`}
-                  {downloadStatus === 'ready' && `Ready!`}
-                </span>
-              </button>
+              <span className="mobile-page-badge">
+                {pageCount} A4 Pages
+              </span>
             </div>
           </div>
 
@@ -291,10 +331,9 @@ export default function App() {
           {/* Scrollable Document Canvas */}
           <div className="preview-canvas-wrapper" id="document-preview-container">
             <div
+              className="pages-container"
               style={{
-                transform: `scale(${zoom})`,
-                transformOrigin: 'top center',
-                transition: 'transform 0.15s ease',
+                zoom: zoom,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '28px',

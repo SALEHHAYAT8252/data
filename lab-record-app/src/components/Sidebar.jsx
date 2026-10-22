@@ -134,15 +134,6 @@ export default function Sidebar({
               <span>Meta</span>
             </button>
           </div>
-
-          <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', padding: '10px 12px', fontSize: '11.5px', color: '#93c5fd', lineHeight: '1.4' }}>
-            <strong style={{ color: '#60a5fa' }}>💡 How to Download PDF:</strong>
-            <div style={{ marginTop: '4px', color: '#cbd5e1' }}>
-              1. Click <strong>Download {enrollFile}</strong>.<br />
-              2. In dialog, set Destination to <strong>Save as PDF</strong> and click <strong>Save</strong>.<br />
-              3. It saves in <strong>1 second</strong> with crisp text and zero blank pages! To view, right-click ➔ <strong>Open with Chrome / Edge</strong>.
-            </div>
-          </div>
         </div>
 
         {/* Student Details Form - Defensive, Never Crashes */}

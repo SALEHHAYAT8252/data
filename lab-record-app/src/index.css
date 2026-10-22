@@ -1093,14 +1093,23 @@ body {
     margin: 0;
   }
 
+  *, *::before, *::after {
+    box-sizing: border-box !important;
+  }
+
   html,
   body {
     width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
     height: auto !important;
     background: #fff !important;
     color: #000 !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: visible !important;
+    zoom: 1 !important;
+    transform: none !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -1108,26 +1117,40 @@ body {
   .sidebar,
   .preview-toolbar,
   .no-print,
+  .download-modal-overlay,
+  .sidebar-backdrop,
   #root > .app-container > .sidebar {
     display: none !important;
   }
 
+  #root,
   .app-container {
     display: block !important;
     height: auto !important;
     width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
+    position: static !important;
+    transform: none !important;
+    zoom: 1 !important;
   }
 
   .preview-pane {
     background: transparent !important;
     height: auto !important;
     width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
     overflow: visible !important;
     padding: 0 !important;
+    margin: 0 !important;
     display: block !important;
+    position: static !important;
+    zoom: 1 !important;
+    transform: none !important;
   }
 
   .preview-canvas-wrapper {
@@ -1137,13 +1160,21 @@ body {
     display: block !important;
     overflow: visible !important;
     width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
+    zoom: 1 !important;
+    transform: none !important;
   }
 
-  .preview-canvas-wrapper > div {
+  .preview-canvas-wrapper > div,
+  .pages-container {
+    zoom: 1 !important;
     transform: none !important;
     gap: 0 !important;
     display: block !important;
     width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -1158,6 +1189,7 @@ body {
     padding: 10mm 12mm !important;
     box-shadow: none !important;
     transform: none !important;
+    zoom: 1 !important;
     overflow: hidden !important;
     page-break-after: always !important;
     break-after: page !important;

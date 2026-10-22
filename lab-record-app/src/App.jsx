@@ -61,7 +61,9 @@ export default function App() {
   };
 
   const [zoom, setZoom] = useState(0.85);
+  const [isPrinting, setIsPrinting] = useState(false);
 
+  // Keep preview zoom dynamically updated for screen responsiveness
   useEffect(() => {
     const handleResize = () => {
       setZoom(computeFitZoom());
@@ -74,6 +76,20 @@ export default function App() {
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // During print / Save to PDF, force zoom to 1 regardless of device viewport
+  useEffect(() => {
+    const handleBeforePrint = () => setIsPrinting(true);
+    const handleAfterPrint = () => setIsPrinting(false);
+
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
     };
   }, []);
 
@@ -126,13 +142,15 @@ export default function App() {
     // Step 1: Preparing pages
     setDownloadStatus('preparing');
 
-    // Step 2: Downloading / formatting
+    // Step 2: Downloading / formatting - force 100% zoom for print
     setTimeout(() => {
       setDownloadStatus('downloading');
+      setIsPrinting(true);
 
-      // Step 3: Trigger native print to PDF dialog
+      // Step 3: Trigger native print to PDF dialog with zoom reset to 1
       setTimeout(() => {
         window.print();
+        setIsPrinting(false);
         setDownloadStatus('ready');
 
         // Step 4: Auto-reset back to idle
@@ -333,7 +351,7 @@ export default function App() {
             <div
               className="pages-container"
               style={{
-                zoom: zoom,
+                zoom: isPrinting ? 1 : zoom,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '28px',

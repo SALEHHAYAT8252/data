@@ -1,0 +1,14 @@
+# Node dependencies & build outputs
+node_modules/
+lab-record-app/node_modules/
+lab-record-app/dist/
+dist/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs & temp files
+*.log
+.DS_Store
+Thumbs.db

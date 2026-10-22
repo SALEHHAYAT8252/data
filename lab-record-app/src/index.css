@@ -1,0 +1,1170 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-app: #0c1017;
+  --bg-surface: #151b26;
+  --bg-surface-elevated: #1e2636;
+  --border-color: #2b3548;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-glow: rgba(59, 130, 246, 0.25);
+  --accent: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-urdu: 'Amiri', 'Traditional Arabic', serif;
+
+  /* Document Specific Styles matching docx */
+  --doc-blue: #365F91;
+  --doc-red: #C0504D;
+  --doc-light-blue: #709FDB;
+  --doc-navy: #002060;
+  --doc-index-blue: #006FC0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* App Layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Sidebar / Controls Panel */
+.sidebar {
+  width: 420px;
+  flex-shrink: 0;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 20;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, rgba(30, 38, 54, 0.7) 0%, rgba(21, 27, 38, 0.7) 100%);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.sidebar-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sidebar-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Sections & Cards */
+.form-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-card:focus-within {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-label span.req {
+  color: #f43f5e;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0f141d;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13.5px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  background: #141a24;
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.form-input::placeholder {
+  color: var(--text-dim);
+}
+
+/* Action Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #252f42;
+  border-color: #3b475e;
+  color: #fff;
+}
+
+/* Document Preview Pane */
+.preview-pane {
+  flex: 1;
+  height: 100%;
+  background: #090c10;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: rgba(15, 20, 29, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-canvas-wrapper {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  overflow-x: auto;
+}
+
+/* ========================================================
+   A4 SHEET SIMULATION (ISO 216 - 210mm x 297mm)
+   NO INNER SCROLLING - EXPANDS NATURALLY
+   ======================================================== */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #111827;
+  padding: 14mm 16mm;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+  position: relative;
+  page-break-after: always;
+  break-after: page;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Times New Roman', Times, serif;
+  transform-origin: top center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: visible !important;
+}
+
+#page-cover,
+#page-certificate,
+.index-page,
+[id^="page-index"] {
+  height: 297mm;
+}
+
+/* Experiment page can grow or span across pages cleanly */
+.exp-page {
+  height: auto !important;
+  min-height: 297mm;
+  page-break-before: always;
+  break-before: page;
+  page-break-after: always;
+  break-after: page;
+  page-break-inside: auto;
+  break-inside: auto;
+}
+
+/* Standard Academic Border as in Docx */
+.academic-border {
+  border: 1.5pt solid #000;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12mm 14mm;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible !important;
+}
+
+/* Urdu typography helper */
+.urdu-text {
+  font-family: var(--font-urdu);
+  direction: rtl;
+  unicode-bidi: embed;
+}
+
+/* ========================================================
+   FRONT COVER PAGE EXACT STYLES (Matching docx)
+   ======================================================== */
+.cover-top-title {
+  text-align: center;
+  font-size: 17pt;
+  font-weight: bold;
+  color: #000;
+  line-height: 1.2;
+  margin-top: 2mm;
+}
+
+.cover-lab-title {
+  text-align: center;
+  font-size: 19pt;
+  font-weight: bold;
+  color: var(--doc-blue);
+  letter-spacing: 0.5px;
+  margin-top: 1mm;
+}
+
+.cover-top-roll {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: bold;
+  color: var(--doc-blue);
+  margin-top: 1mm;
+  letter-spacing: 1px;
+}
+
+.cover-requirement {
+  text-align: center;
+  font-size: 11pt;
+  color: #000;
+  max-width: 90%;
+  margin: 3mm auto 0;
+  line-height: 1.35;
+}
+
+.cover-degree {
+  text-align: center;
+  font-size: 13.5pt;
+  font-weight: bold;
+  color: var(--doc-red);
+  margin-top: 2.5mm;
+  letter-spacing: 0.5px;
+}
+
+.cover-sem {
+  text-align: center;
+  font-size: 12.5pt;
+  color: #000;
+  margin-top: 1.5mm;
+}
+
+.cover-year {
+  text-align: center;
+  font-size: 12.5pt;
+  color: #000;
+  margin-top: 1mm;
+}
+
+.cover-by-section {
+  text-align: center;
+  margin-top: 4mm;
+}
+
+.cover-by {
+  font-size: 12.5pt;
+  color: #000;
+}
+
+.cover-student-name {
+  font-size: 13.5pt;
+  font-weight: bold;
+  color: #000;
+  text-transform: uppercase;
+  margin-top: 1mm;
+  letter-spacing: 0.5px;
+}
+
+.cover-student-meta {
+  font-size: 12pt;
+  color: #000;
+  margin-top: 1mm;
+}
+
+.cover-student-meta .roll-hl {
+  color: var(--doc-light-blue);
+  font-weight: 600;
+}
+
+.cover-submitted-section {
+  text-align: center;
+  margin-top: 4mm;
+}
+
+.cover-submitted-to {
+  font-size: 13pt;
+  color: #000;
+}
+
+.cover-supervisor-name {
+  font-size: 15pt;
+  font-weight: bold;
+  color: #000;
+  margin-top: 1mm;
+}
+
+.cover-supervisor-desig {
+  font-size: 12.5pt;
+  color: #000;
+  margin-top: 0.5mm;
+}
+
+.cover-supervisor-dept {
+  font-size: 12.5pt;
+  color: #000;
+  margin-top: 0.5mm;
+}
+
+.cover-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4mm;
+  margin-bottom: 2mm;
+}
+
+.cover-logo-img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+}
+
+.cover-footer-school {
+  text-align: center;
+  font-size: 14pt;
+  font-weight: bold;
+  color: var(--doc-red);
+  letter-spacing: 0.5px;
+  margin-top: 1mm;
+}
+
+.cover-footer-dept {
+  text-align: center;
+  font-size: 11pt;
+  font-weight: 500;
+  color: #000;
+  letter-spacing: 0.2px;
+  margin-top: 1mm;
+}
+
+.cover-footer-uni {
+  text-align: center;
+  font-size: 17pt;
+  font-weight: bold;
+  color: #000;
+  letter-spacing: 0.5px;
+  margin-top: 1.5mm;
+}
+
+.cover-footer-sub {
+  text-align: center;
+  font-size: 9.5pt;
+  color: #222;
+  margin-top: 1mm;
+}
+
+.cover-footer-naac {
+  text-align: center;
+  font-size: 9.5pt;
+  font-weight: 600;
+  color: #111;
+  margin-top: 0.5mm;
+}
+
+.cover-footer-addr {
+  text-align: center;
+  font-size: 9pt;
+  color: #333;
+  margin-top: 0.5mm;
+}
+
+/* ========================================================
+   CERTIFICATE PAGE EXACT STYLES (Matching docx)
+   ======================================================== */
+.cert-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 4mm;
+  margin-bottom: 2mm;
+}
+
+.cert-logo-img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+}
+
+.cert-dept-header {
+  text-align: center;
+  font-size: 13.5pt;
+  font-weight: bold;
+  color: var(--doc-navy);
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+.cert-heading {
+  text-align: center;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 34pt;
+  font-style: italic;
+  font-weight: normal;
+  color: #000;
+  margin-top: 10mm;
+  margin-bottom: 8mm;
+  letter-spacing: 1px;
+}
+
+.cert-body-text {
+  font-size: 12.5pt;
+  line-height: 2.1;
+  text-align: justify;
+  color: #111;
+  text-indent: 10mm;
+  margin-top: 4mm;
+  padding: 0 4mm;
+}
+
+.cert-body-text strong {
+  font-weight: bold;
+  color: #000;
+}
+
+.cert-signatures {
+  margin-top: auto;
+  margin-bottom: 12mm;
+  padding: 0 8mm;
+  display: flex;
+  flex-direction: column;
+  gap: 22mm;
+}
+
+.cert-head-sig {
+  text-align: center;
+}
+
+.cert-head-title {
+  font-size: 12pt;
+  font-weight: bold;
+  color: #000;
+  line-height: 1.3;
+}
+
+.cert-examiners-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 6mm;
+}
+
+.cert-examiner-item {
+  text-align: center;
+  font-size: 12pt;
+  font-weight: bold;
+  color: #000;
+  line-height: 1.3;
+}
+
+/* ========================================================
+   INDEX PAGE EXACT STYLES (Matching docx)
+   ======================================================== */
+.index-title {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: bold;
+  color: var(--doc-index-blue);
+  letter-spacing: 0.5px;
+  margin-top: 2mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.index-subtitle {
+  text-align: center;
+  font-size: 14pt;
+  font-weight: bold;
+  color: var(--doc-index-blue);
+  margin-top: 1mm;
+  margin-bottom: 6mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.index-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+  margin-top: 2mm;
+}
+
+.index-table th {
+  border: 1pt solid #000;
+  padding: 6px 8px;
+  background-color: #f1f5f9;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.index-table th .th-urdu {
+  font-family: var(--font-urdu);
+  font-size: 11pt;
+  display: block;
+}
+
+.index-table td {
+  border: 1pt solid #000;
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+.index-table td.center {
+  text-align: center;
+}
+
+.index-program-title {
+  font-weight: bold;
+  font-size: 9.5pt;
+  color: #000;
+}
+
+.index-program-file {
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  color: #4b5563;
+  margin-top: 2px;
+}
+
+.index-program-desc {
+  font-size: 8.5pt;
+  color: #374151;
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+/* ========================================================
+   EXPERIMENT PAGES STYLES - ZERO SCROLLBARS, FULL CONTENT
+   ======================================================== */
+.exp-header {
+  border-bottom: 2px solid #1e293b;
+  padding-bottom: 3mm;
+  margin-bottom: 4mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.exp-num-title {
+  font-size: 13pt;
+  font-weight: bold;
+  color: #000;
+}
+
+.exp-meta {
+  font-size: 9pt;
+  color: #475569;
+  text-align: right;
+}
+
+.exp-section-title {
+  font-size: 10pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--doc-blue);
+  letter-spacing: 0.5px;
+  margin-top: 3mm;
+  margin-bottom: 1.5mm;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exp-aim-box {
+  background: #f8fafc;
+  border-left: 3.5px solid var(--doc-blue);
+  padding: 8px 12px;
+  font-size: 9.5pt;
+  line-height: 1.45;
+  color: #1e293b;
+  margin-bottom: 4mm;
+  border-radius: 2px;
+}
+
+.exp-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8mm;
+  overflow: visible !important;
+}
+
+.exp-step-heading {
+  font-size: 9.5pt;
+  font-weight: bold;
+  color: #1e293b;
+  margin-top: 4px;
+  padding: 4px 0;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.exp-cell-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  overflow: visible !important;
+}
+
+.code-block-wrapper {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  overflow: visible !important;
+}
+
+.code-block-header {
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 4px 8px;
+  font-family: var(--font-sans);
+  font-size: 8pt;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* NO SCROLLBAR - WRAPS CLEANLY */
+.code-block {
+  background: #f8fafc;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  line-height: 1.35;
+  color: #0f172a;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.output-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: visible !important;
+}
+
+/* NO SCROLLBAR - EXPANDS TO SHOW ALL LINES */
+.output-block {
+  background: #0f172a;
+  color: #38bdf8;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  line-height: 1.3;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow: visible !important;
+  max-height: none !important;
+  border: 1px solid #1e293b;
+}
+
+.output-image-wrapper {
+  text-align: center;
+  margin: 2mm 0;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.output-image {
+  max-width: 90%;
+  max-height: 140px;
+  object-fit: contain;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.exp-footer {
+  margin-top: auto;
+  padding-top: 4mm;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8pt;
+  color: #64748b;
+  font-family: var(--font-sans);
+}
+
+/* ========================================================
+   CONTINUOUS LAB MANUAL PAGES (NO WASTED EMPTY SPACE)
+   ======================================================== */
+.continuous-page {
+  height: 297mm;
+  min-height: 297mm;
+  max-height: 297mm;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-running-header {
+  border-bottom: 1.5px solid #000;
+  padding-bottom: 2mm;
+  margin-bottom: 3mm;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #1e293b;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.page-running-footer {
+  margin-top: auto;
+  border-top: 1.5px solid #000;
+  padding-top: 2mm;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt;
+  color: #475569;
+}
+
+.footer-page-badge {
+  font-weight: bold;
+  color: #000;
+}
+
+.page-content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.continuous-exp-header {
+  margin-top: 2mm;
+  margin-bottom: 1mm;
+  border-bottom: 1.5px solid var(--doc-blue);
+  padding-bottom: 1.5mm;
+}
+
+.continuous-exp-title {
+  font-size: 11pt;
+  font-weight: bold;
+  color: var(--doc-blue);
+}
+
+.continuous-aim-box {
+  background: #f8fafc;
+  border-left: 3px solid var(--doc-blue);
+  padding: 4px 8px;
+  font-size: 8.5pt;
+  line-height: 1.35;
+  color: #1e293b;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.aim-badge {
+  font-weight: bold;
+  color: #0f172a;
+}
+
+.aim-text {
+  color: #334155;
+}
+
+.continuous-subheading {
+  font-size: 8.5pt;
+  font-weight: bold;
+  color: #1e293b;
+  margin-top: 2px;
+  border-bottom: 1px dashed #cbd5e1;
+  padding-bottom: 2px;
+}
+
+.continuous-block {
+  margin-bottom: 2px;
+}
+
+/* ========================================================
+   PRINT STYLES: Pixel-Perfect for Browser "Save to PDF"
+   Every Single Page is an Exact A4 Sheet with a Complete
+   Rectangular Border, No Awkward Empty Gaps
+   ======================================================== */
+@media print {
+  @page {
+    size: 210mm 297mm;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    height: auto !important;
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .sidebar,
+  .preview-toolbar,
+  .no-print,
+  #root > .app-container > .sidebar {
+    display: none !important;
+  }
+
+  .app-container {
+    display: block !important;
+    height: auto !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .preview-pane {
+    background: transparent !important;
+    height: auto !important;
+    width: 210mm !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .preview-canvas-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+    width: 210mm !important;
+  }
+
+  .preview-canvas-wrapper > div {
+    transform: none !important;
+    gap: 0 !important;
+    display: block !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Every page is an exact A4 sheet (210mm x 297mm) with zero margin overflows */
+  .a4-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 10mm 12mm !important;
+    box-shadow: none !important;
+    transform: none !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+    background: #fff !important;
+  }
+
+  .a4-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Complete 4-sided rectangular border on every single printed page */
+  .academic-border {
+    border: 1.5pt solid #000 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    box-sizing: border-box !important;
+    padding: 6mm 8mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+
+  .page-running-header,
+  .page-running-footer {
+    display: flex !important;
+    border-color: #000 !important;
+  }
+
+  .code-block,
+  .output-block {
+    max-height: none !important;
+    overflow: hidden !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+  }
+
+  .output-image {
+    max-height: 160px !important;
+  }
+}
+
+/* ========================================================
+   PDF DOWNLOADING MODAL & STATUS INDICATORS
+   ======================================================== */
+.icon-spin {
+  animation: spin 0.8s linear infinite;
+}
+
+.download-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(12, 16, 23, 0.78);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.download-modal-card {
+  background: #1e2636;
+  border: 1.5px solid #3b82f6;
+  border-radius: 16px;
+  padding: 32px 36px;
+  max-width: 440px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(59, 130, 246, 0.3);
+  text-align: center;
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.download-spinner-ring {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(59, 130, 246, 0.2);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.download-success-badge {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid #10b981;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #0c1017;
+  border-radius: 10px;
+  margin-top: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.download-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.download-progress-fill.preparing {
+  width: 45%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.download-progress-fill.downloading {
+  width: 85%;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+}
+
+.download-progress-fill.ready {
+  width: 100%;
+  background: #10b981;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}

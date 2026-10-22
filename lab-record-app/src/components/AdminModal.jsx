@@ -57,14 +57,8 @@ export default function AdminModal({
       }
       setError('');
     } else {
-      setError('Invalid email or password. Please use admin credentials.');
+      setError('Invalid email or password. Access is restricted to authorized administrators.');
     }
-  };
-
-  const handleQuickFill = () => {
-    setEmail(ADMIN_EMAIL);
-    setPassword(ADMIN_PASSWORD);
-    setError('');
   };
 
   const handleLogout = () => {
@@ -146,12 +140,9 @@ export default function AdminModal({
           {!isAdmin ? (
             /* Login Form */
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div className="admin-login-notice">
-                <div style={{ fontWeight: '600', color: '#38bdf8', marginBottom: '4px' }}>
+              <div className="admin-login-notice" style={{ textAlign: 'center', padding: '12px' }}>
+                <div style={{ fontWeight: '600', color: '#38bdf8' }}>
                   Restricted Administrator Access
-                </div>
-                <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.4' }}>
-                  Sign in with admin credentials to configure default Semester (e.g. <strong>2ND Year / 3RD Semester</strong>), Session (<strong>2025-26</strong>), and Supervisor (<strong>Mr. Kamran Siddiqui</strong>).
                 </div>
               </div>
 
@@ -166,7 +157,7 @@ export default function AdminModal({
                 <input
                   type="email"
                   className="form-input"
-                  placeholder="salehhayat632@gmail.com"
+                  placeholder="Enter administrator email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   autoComplete="email"
@@ -188,7 +179,7 @@ export default function AdminModal({
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className="form-input"
-                  placeholder="Enter admin password"
+                  placeholder="Enter administrator password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   autoComplete="current-password"
@@ -196,23 +187,14 @@ export default function AdminModal({
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+              <div style={{ marginTop: '6px' }}>
                 <button
                   type="submit"
                   className="btn-primary"
-                  style={{ flex: 1, padding: '10px 16px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  style={{ width: '100%', padding: '11px 16px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
                   <IconLock size={15} />
                   <span>Log In as Admin</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleQuickFill}
-                  className="btn-secondary"
-                  style={{ padding: '10px 14px', fontSize: '12px', color: '#38bdf8' }}
-                  title="Auto-fill default admin credentials"
-                >
-                  Quick Fill
                 </button>
               </div>
             </form>

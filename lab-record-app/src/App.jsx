@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import labData from './data/labData.json';
 import CoverPage from './components/CoverPage';
 import CertificatePage from './components/CertificatePage';
-import IndexPage, { getIndexPages } from './components/IndexPage';
+import IndexPage, { getIndexPages, DEFAULT_INDEX_COLUMNS } from './components/IndexPage';
 import ContinuousLabManual, { usePaginator } from './components/ContinuousLabManual';
 import Sidebar from './components/Sidebar';
+import AdminModal, { ADMIN_EMAIL, ADMIN_PASSWORD } from './components/AdminModal';
+import TableManagerModal from './components/TableManagerModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import {
   IconLoader,
@@ -13,8 +15,71 @@ import {
   IconZoomIn,
   IconZoomOut,
   IconRotateCcw,
-  IconMenu
+  IconMenu,
+  IconShield,
+  IconLock,
+  IconColumns,
+  IconSettings
 } from './components/Icons';
+
+// Default academic settings per MANUU MCA Data Science specification
+const DEFAULT_ACADEMIC_META = {
+  university: labData.university || 'MAULANA AZAD NATIONAL URDU UNIVERSITY',
+  school: labData.school || 'SCHOOL OF TECHNOLOGY',
+  department: labData.department || 'DEPARTMENT OF COMPUTER SCIENCE & INFORMATION TECHNOLOGY',
+  course: labData.course || 'MASTER OF COMPUTER APPLICATION',
+  semester: '2ND Year / 3RD Semester',
+  academicYear: '2025-26',
+  labTitle: labData.labTitle || 'DATA SCIENCE LAB',
+  courseCode: labData.courseCode || 'MMCA311PCT',
+  submittedTo: {
+    name: 'Mr. Kamran Siddiqui',
+    designation: 'Assistant Professor',
+    department: 'Department of CS & IT, MANUU'
+  },
+  logoBase64: labData.logoBase64,
+  accreditation: labData.accreditation || 'Accredited Grade “A+” by NAAC',
+  address: labData.address || 'Gachibowli, Hyderabad-500032, T.S. www.manuu.edu.in',
+  universitySub: labData.universitySub || '(A Central University established by an Act of Parliament in 1998)'
+};
+
+const getInitialDocMeta = () => {
+  try {
+    const saved = localStorage.getItem('lab_record_admin_defaults');
+    if (saved) {
+      return { ...DEFAULT_ACADEMIC_META, ...JSON.parse(saved) };
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  return DEFAULT_ACADEMIC_META;
+};
+
+const getInitialColumns = () => {
+  try {
+    const saved = localStorage.getItem('lab_record_columns');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  return DEFAULT_INDEX_COLUMNS;
+};
+
+const getInitialExperiments = () => {
+  try {
+    const saved = localStorage.getItem('lab_record_experiments');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  return labData.experiments || [];
+};
 
 export default function App() {
   const [student, setStudent] = useState({
@@ -23,20 +88,21 @@ export default function App() {
     enrollmentNo: labData.defaultStudent?.enrollmentNo || 'A250017'
   });
 
-  const [docMeta, setDocMeta] = useState({
-    university: labData.university,
-    school: labData.school,
-    department: labData.department,
-    course: labData.course,
-    semester: labData.semester,
-    academicYear: labData.academicYear,
-    labTitle: labData.labTitle,
-    courseCode: labData.courseCode,
-    submittedTo: labData.submittedTo,
-    logoBase64: labData.logoBase64
-  });
+  const [docMeta, setDocMeta] = useState(getInitialDocMeta);
+  const [experiments, setExperiments] = useState(getInitialExperiments);
+  const [columns, setColumns] = useState(getInitialColumns);
 
-  const [experiments, setExperiments] = useState(labData.experiments || []);
+  // Admin and Table modal states
+  const [isAdmin, setIsAdmin] = useState(() => {
+    try {
+      return localStorage.getItem('lab_record_admin_auth') === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isTableManagerOpen, setIsTableManagerOpen] = useState(false);
+
   const [viewMode, setViewMode] = useState('all'); // 'all', 'front', 'cover', 'certificate', 'index'
   const [selectedExpId, setSelectedExpId] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -117,20 +183,57 @@ export default function App() {
       rollNo: labData.defaultStudent?.rollNo || '25MMCA019HY',
       enrollmentNo: labData.defaultStudent?.enrollmentNo || 'A250017'
     });
-    setDocMeta({
-      university: labData.university,
-      school: labData.school,
-      department: labData.department,
-      course: labData.course,
-      semester: labData.semester,
-      academicYear: labData.academicYear,
-      labTitle: labData.labTitle,
-      courseCode: labData.courseCode,
-      submittedTo: labData.submittedTo,
-      logoBase64: labData.logoBase64
-    });
-    setExperiments(labData.experiments || []);
+    setDocMeta(getInitialDocMeta());
     setViewMode('all');
+  };
+
+  const handleSaveAdminDefaults = (updatedMeta) => {
+    try {
+      localStorage.setItem('lab_record_admin_defaults', JSON.stringify(updatedMeta));
+    } catch (e) {
+      console.error(e);
+    }
+    setDocMeta(updatedMeta);
+  };
+
+  const handleResetAdminDefaults = () => {
+    try {
+      localStorage.removeItem('lab_record_admin_defaults');
+    } catch (e) {
+      console.error(e);
+    }
+    setDocMeta(DEFAULT_ACADEMIC_META);
+  };
+
+  const handleSaveTable = (updatedCols, updatedExps) => {
+    try {
+      localStorage.setItem('lab_record_columns', JSON.stringify(updatedCols));
+      localStorage.setItem('lab_record_experiments', JSON.stringify(updatedExps));
+    } catch (e) {
+      console.error(e);
+    }
+    setColumns(updatedCols);
+    setExperiments(updatedExps);
+  };
+
+  const handleResetTable = () => {
+    try {
+      localStorage.removeItem('lab_record_columns');
+      localStorage.removeItem('lab_record_experiments');
+    } catch (e) {
+      console.error(e);
+    }
+    setColumns(DEFAULT_INDEX_COLUMNS);
+    setExperiments(labData.experiments || []);
+  };
+
+  const handleLogoutAdmin = () => {
+    setIsAdmin(false);
+    try {
+      localStorage.removeItem('lab_record_admin_auth');
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   // Interactive PDF Download Feature with Visual Progress Feedback
@@ -195,6 +298,7 @@ export default function App() {
           setDocMeta={setDocMeta}
           experiments={experiments}
           setExperiments={setExperiments}
+          columns={columns}
           viewMode={viewMode}
           setViewMode={setViewMode}
           selectedExpId={selectedExpId}
@@ -204,6 +308,11 @@ export default function App() {
           onReset={handleReset}
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
+          isAdmin={isAdmin}
+          onOpenAdminModal={() => setIsAdminModalOpen(true)}
+          onOpenTableManager={() => setIsTableManagerOpen(true)}
+          onSaveDefaults={handleSaveAdminDefaults}
+          onLogoutAdmin={handleLogoutAdmin}
         />
 
         {/* Main Preview Area */}
@@ -233,6 +342,28 @@ export default function App() {
                     {pageCount} Pages
                   </span>
                 </div>
+
+                {/* Admin Mode Shortcut */}
+                <button
+                  type="button"
+                  className={`toolbar-quick-btn ${isAdmin ? 'admin-active' : ''}`}
+                  onClick={() => setIsAdminModalOpen(true)}
+                  title={isAdmin ? `Admin: ${ADMIN_EMAIL}` : 'Sign in as Administrator'}
+                >
+                  {isAdmin ? <IconShield size={14} style={{ color: '#10b981' }} /> : <IconLock size={13} />}
+                  <span className="toolbar-btn-text">{isAdmin ? 'Admin' : 'Admin'}</span>
+                </button>
+
+                {/* Table Customizer Shortcut */}
+                <button
+                  type="button"
+                  className="toolbar-quick-btn"
+                  onClick={() => setIsTableManagerOpen(true)}
+                  title="Customize Index Table Columns & Content"
+                >
+                  <IconColumns size={14} style={{ color: '#38bdf8' }} />
+                  <span className="toolbar-btn-text">Table</span>
+                </button>
               </div>
 
               <div className="toolbar-right-group">
@@ -368,11 +499,12 @@ export default function App() {
                 <CertificatePage data={docMeta} student={student} />
               )}
 
-              {/* Index Page (Pages 3 & 4) */}
+              {/* Index Page (Pages 3 & 4) with dynamic columns */}
               {shouldRenderIndex && (
                 <IndexPage
                   experiments={experiments}
                   expStartPages={expStartPages}
+                  columns={columns}
                   onExperimentClick={id => {
                     const targetPage = expStartPages[id];
                     if (targetPage) {
@@ -394,6 +526,31 @@ export default function App() {
             </div>
           </div>
         </main>
+
+        {/* Administrator Authentication & Global Configuration Modal */}
+        <AdminModal
+          isOpen={isAdminModalOpen}
+          onClose={() => setIsAdminModalOpen(false)}
+          isAdmin={isAdmin}
+          setIsAdmin={setIsAdmin}
+          docMeta={docMeta}
+          setDocMeta={setDocMeta}
+          onSaveDefaults={handleSaveAdminDefaults}
+          onResetDefaults={handleResetAdminDefaults}
+          onOpenTableManager={() => setIsTableManagerOpen(true)}
+        />
+
+        {/* Dynamic Table & Column Customizer Modal */}
+        <TableManagerModal
+          isOpen={isTableManagerOpen}
+          onClose={() => setIsTableManagerOpen(false)}
+          columns={columns}
+          setColumns={setColumns}
+          experiments={experiments}
+          setExperiments={setExperiments}
+          onSaveTable={handleSaveTable}
+          onResetTable={handleResetTable}
+        />
       </div>
     </ErrorBoundary>
   );

@@ -16,9 +16,22 @@ export function getIndexPages(experiments = []) {
   return pages;
 }
 
-export default function IndexPage({ experiments, onExperimentClick, expStartPages }) {
+export const DEFAULT_INDEX_COLUMNS = [
+  { id: 'sno', label: 'S.No.', urdu: 'سیریل نمبر', width: '8%', align: 'center', isDefault: true },
+  { id: 'title', label: 'Program Name', urdu: 'پروگرام کا نام', width: 'auto', align: 'left', isDefault: true },
+  { id: 'page', label: 'Page No.', urdu: 'صفحہ نمبر', width: '10%', align: 'center', isDefault: true },
+  { id: 'remarks', label: 'Remarks', urdu: 'ریمارکس', width: '14%', align: 'center', isDefault: true }
+];
+
+export default function IndexPage({
+  experiments,
+  onExperimentClick,
+  expStartPages,
+  columns = DEFAULT_INDEX_COLUMNS
+}) {
   // Put maximum questions on Page 1 (up to 7), and remaining questions on next page(s)
   const pages = getIndexPages(experiments || []);
+  const activeColumns = columns && columns.length > 0 ? columns : DEFAULT_INDEX_COLUMNS;
 
   return (
     <>
@@ -44,26 +57,22 @@ export default function IndexPage({ experiments, onExperimentClick, expStartPage
                 <span className="urdu-text">ریکارڈ عملی لیب</span>
               </div>
 
-              {/* Formal Academic Index Table (No Date column) */}
+              {/* Dynamic Academic Index Table */}
               <table className="index-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '8%' }}>
-                      <span>S.No.</span>
-                      <span className="th-urdu">سیریل نمبر</span>
-                    </th>
-                    <th style={{ width: '68%' }}>
-                      <span>Program Name</span>
-                      <span className="th-urdu">پروگرام کا نام</span>
-                    </th>
-                    <th style={{ width: '10%' }}>
-                      <span>Page No.</span>
-                      <span className="th-urdu">صفحہ نمبر</span>
-                    </th>
-                    <th style={{ width: '14%' }}>
-                      <span>Remarks</span>
-                      <span className="th-urdu">ریمارکس</span>
-                    </th>
+                    {activeColumns.map(col => (
+                      <th
+                        key={col.id}
+                        style={{
+                          width: col.width || 'auto',
+                          textAlign: col.align || 'center'
+                        }}
+                      >
+                        <span>{col.label}</span>
+                        {col.urdu ? <span className="th-urdu">{col.urdu}</span> : null}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -73,19 +82,56 @@ export default function IndexPage({ experiments, onExperimentClick, expStartPage
                       style={{ cursor: onExperimentClick ? 'pointer' : 'default' }}
                       onClick={() => onExperimentClick && onExperimentClick(exp.id)}
                     >
-                      <td className="center" style={{ fontWeight: 'bold' }}>
-                        {exp.id}
-                      </td>
-                      <td>
-                        <div className="index-program-title">{exp.title}</div>
-                        <div className="index-program-desc">{exp.description}</div>
-                      </td>
-                      <td className="center" style={{ fontWeight: '600' }}>
-                        {expStartPages && expStartPages[exp.id] !== undefined ? expStartPages[exp.id] : exp.page}
-                      </td>
-                      <td className="center" style={{ fontSize: '8.5pt', color: '#15803d', fontWeight: '500' }}>
-                        Completed
-                      </td>
+                      {activeColumns.map(col => {
+                        if (col.id === 'sno') {
+                          return (
+                            <td key={col.id} className="center" style={{ fontWeight: 'bold' }}>
+                              {exp.id}
+                            </td>
+                          );
+                        }
+                        if (col.id === 'title') {
+                          return (
+                            <td key={col.id}>
+                              <div className="index-program-title">{exp.title}</div>
+                              {exp.description && (
+                                <div className="index-program-desc">{exp.description}</div>
+                              )}
+                            </td>
+                          );
+                        }
+                        if (col.id === 'page') {
+                          return (
+                            <td key={col.id} className="center" style={{ fontWeight: '600' }}>
+                              {expStartPages && expStartPages[exp.id] !== undefined
+                                ? expStartPages[exp.id]
+                                : exp.page}
+                            </td>
+                          );
+                        }
+                        if (col.id === 'remarks') {
+                          return (
+                            <td
+                              key={col.id}
+                              className="center"
+                              style={{ fontSize: '8.5pt', color: '#15803d', fontWeight: '500' }}
+                            >
+                              {exp.remarks || 'Completed'}
+                            </td>
+                          );
+                        }
+                        // Custom Column
+                        const cellVal = exp.customData?.[col.id] ?? exp[col.id] ?? col.defaultValue ?? '-';
+                        return (
+                          <td
+                            key={col.id}
+                            className={col.align === 'center' ? 'center' : ''}
+                            style={{ fontSize: '8.5pt', color: '#1e293b' }}
+                          >
+                            {cellVal}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>

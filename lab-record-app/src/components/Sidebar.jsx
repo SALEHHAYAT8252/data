@@ -15,7 +15,12 @@ import {
   IconEdit,
   IconCalendar,
   IconSparkles,
-  IconClose
+  IconClose,
+  IconLock,
+  IconUnlock,
+  IconShield,
+  IconColumns,
+  IconSave
 } from './Icons';
 
 export default function Sidebar({
@@ -33,10 +38,17 @@ export default function Sidebar({
   downloadStatus = 'idle',
   onReset,
   isOpen = false,
-  onClose = () => {}
+  onClose = () => {},
+  isAdmin = false,
+  onOpenAdminModal = () => {},
+  onOpenTableManager = () => {},
+  columns = [],
+  onSaveDefaults = () => {},
+  onLogoutAdmin = () => {}
 }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTableEditor, setShowTableEditor] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleStudentChange = (field, val) => {
     setStudent(prev => ({ ...(prev || {}), [field]: val }));
@@ -134,6 +146,50 @@ export default function Sidebar({
               <span>Meta</span>
             </button>
           </div>
+
+          {/* Admin Mode Control Pill / Banner */}
+          {!isAdmin ? (
+            <button
+              type="button"
+              className="sidebar-admin-btn"
+              onClick={onOpenAdminModal}
+              title="Sign in as Admin to change default semester, session, and faculty"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <IconLock size={15} style={{ color: '#38bdf8' }} />
+                <span>Admin Login</span>
+              </div>
+              <span className="sidebar-admin-tag">Defaults</span>
+            </button>
+          ) : (
+            <div className="sidebar-admin-active">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <IconShield size={15} style={{ color: '#10b981' }} />
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#10b981' }}>ADMIN ACTIVE</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-admin-logout-sm"
+                  onClick={onLogoutAdmin}
+                  title="Sign out of Admin mode"
+                >
+                  Logout
+                </button>
+              </div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '8px' }}>
+                salehhayat632@gmail.com
+              </div>
+              <button
+                type="button"
+                className="btn-admin-config"
+                onClick={onOpenAdminModal}
+              >
+                <IconSettings size={13} />
+                <span>Edit Global Defaults</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Student Details Form - Defensive, Never Crashes */}
@@ -246,41 +302,35 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* Index Table Page Numbers Customizer */}
+        {/* Index Table & Columns Manager Card */}
         <div className="form-card">
           <div
             className="card-title"
-            style={{ cursor: 'pointer', justifyContent: 'space-between', marginBottom: showTableEditor ? '14px' : '0' }}
-            onClick={() => setShowTableEditor(!showTableEditor)}
+            style={{ cursor: 'pointer', justifyContent: 'space-between', marginBottom: '8px' }}
+            onClick={onOpenTableManager}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <IconEdit size={16} style={{ color: '#10b981' }} />
-              <span>Customize Index Page Numbers</span>
+              <IconColumns size={16} style={{ color: '#10b981' }} />
+              <span>Index Table & Columns</span>
             </div>
-            <span style={{ fontSize: '11px', color: '#94a3b8' }}>{showTableEditor ? 'Hide' : 'Edit'}</span>
+            <span className="badge-columns-count">
+              {columns?.length || 4} Cols
+            </span>
           </div>
 
-          {showTableEditor && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px', maxHeight: '300px', overflowY: 'auto' }}>
-              {experiments.map(exp => (
-                <div key={exp.id} style={{ background: '#0f141d', padding: '10px', borderRadius: '8px', border: '1px solid #2b3548' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#f8fafc', marginBottom: '6px' }}>
-                    Q{exp.id}: {exp.shortTitle}
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '10px', color: '#94a3b8' }}>Page No.</label>
-                    <input
-                      type="number"
-                      className="form-input"
-                      style={{ padding: '6px 8px', fontSize: '12px' }}
-                      value={exp.page}
-                      onChange={e => handleExpChange(exp.id, 'page', parseInt(e.target.value) || 1)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <p style={{ fontSize: '11.5px', color: '#94a3b8', lineHeight: '1.4', margin: '4px 0 10px' }}>
+            Add custom columns (Date, Signature, Marks) & edit question titles, descriptions, and remarks.
+          </p>
+
+          <button
+            type="button"
+            className="btn-secondary"
+            style={{ width: '100%', padding: '9px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#60a5fa' }}
+            onClick={onOpenTableManager}
+          >
+            <IconEdit size={14} />
+            <span>Manage Columns & Edit Content</span>
+          </button>
         </div>
 
         {/* Advanced Academic Metadata */}
@@ -308,16 +358,18 @@ export default function Sidebar({
                 className="form-input"
                 value={docMeta.semester || ''}
                 onChange={e => handleDocMetaChange('semester', e.target.value)}
+                placeholder="2ND Year / 3RD Semester"
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Academic Year</label>
+              <label className="form-label">Academic Year / Session</label>
               <input
                 type="text"
                 className="form-input"
                 value={docMeta.academicYear || ''}
                 onChange={e => handleDocMetaChange('academicYear', e.target.value)}
+                placeholder="2025-26"
               />
             </div>
 
@@ -332,7 +384,7 @@ export default function Sidebar({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Supervisor / Teacher</label>
+              <label className="form-label">Supervisor / Teacher Name</label>
               <input
                 type="text"
                 className="form-input"
@@ -343,8 +395,67 @@ export default function Sidebar({
                     submittedTo: { ...(prev?.submittedTo || {}), name: e.target.value }
                   }))
                 }
+                placeholder="Mr. Kamran Siddiqui"
               />
             </div>
+
+            <div className="form-group">
+              <label className="form-label">Supervisor Designation</label>
+              <input
+                type="text"
+                className="form-input"
+                value={docMeta.submittedTo?.designation || ''}
+                onChange={e =>
+                  setDocMeta(prev => ({
+                    ...(prev || {}),
+                    submittedTo: { ...(prev?.submittedTo || {}), designation: e.target.value }
+                  }))
+                }
+                placeholder="Assistant Professor"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Supervisor Department</label>
+              <input
+                type="text"
+                className="form-input"
+                value={docMeta.submittedTo?.department || ''}
+                onChange={e =>
+                  setDocMeta(prev => ({
+                    ...(prev || {}),
+                    submittedTo: { ...(prev?.submittedTo || {}), department: e.target.value }
+                  }))
+                }
+                placeholder="Department of CS & IT, MANUU"
+              />
+            </div>
+
+            {isAdmin ? (
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ width: '100%', marginTop: '10px', padding: '9px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                onClick={() => {
+                  onSaveDefaults(docMeta);
+                  setSaveSuccess(true);
+                  setTimeout(() => setSaveSuccess(false), 2000);
+                }}
+              >
+                <IconSave size={14} />
+                <span>{saveSuccess ? '✓ Saved as Defaults!' : 'Save as Global Defaults'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ width: '100%', marginTop: '10px', padding: '8px 12px', fontSize: '11.5px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                onClick={onOpenAdminModal}
+              >
+                <IconLock size={13} style={{ color: '#38bdf8' }} />
+                <span>Admin Login to Save Defaults</span>
+              </button>
+            )}
           </div>
         )}
       </div>

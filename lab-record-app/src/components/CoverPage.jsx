@@ -9,7 +9,7 @@ export default function CoverPage({ data = {}, student = {} }) {
     <div className="a4-page" id="page-cover">
       <div className="academic-border">
         {/* Top Titles */}
-        <div className="cover-top-title">A Lab Manual For</div>
+        <div className="cover-top-title">A Lab Record For</div>
         <div className="cover-lab-title">{data?.labTitle || 'DATA SCIENCE LAB'}</div>
         <div className="cover-top-roll">{rollNo || '25MMCA019HY'}</div>
 
